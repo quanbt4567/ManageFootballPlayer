@@ -36,9 +36,9 @@ Giao diện dòng lệnh (Console). Không dùng cơ sở dữ liệu, giao di�
 
 | Họ tên | Vai trò | Công việc phụ trách |
 |---|---|---|
-| Tên thành viên 1 | Trưởng nhóm | Tạo repo, struct `CauThu` + menu, chức năng Thêm mới, validate nhập liệu |
-| Tên thành viên 2 | Thành viên | Chức năng Tìm kiếm (theo mã/tên), Cập nhật, Xóa |
-| Tên thành viên 3 | Thành viên | Chức năng Hiển thị dạng bảng, Thống kê, Sắp xếp/Lọc, hoàn thiện README |
+| Quân | Trưởng nhóm | Tạo repo, struct `CauThu` + menu, chức năng Thêm mới, validate nhập liệu |
+| Long | Thành viên | Chức năng Tìm kiếm (theo mã/tên), Cập nhật, Xóa |
+| Minh | Thành viên | Chức năng Hiển thị dạng bảng, Thống kê, Sắp xếp/Lọc, hoàn thiện README |
 
 > Ghi chú: mỗi thành viên tự commit bằng tài khoản GitHub cá nhân, commit message rõ ràng
 > (`feat: ...`, `fix: ...`).
