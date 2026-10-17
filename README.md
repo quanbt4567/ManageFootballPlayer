@@ -39,7 +39,7 @@ Giao diện dòng lệnh (Console). Không dùng cơ sở dữ liệu, giao di�
 | Minh Quân | Trưởng nhóm | Tạo repo, struct `CauThu` + menu, chức năng Thêm mới, validate nhập liệu |
 | Long | Thành viên | Chức năng Tìm kiếm (theo mã/tên), Cập nhật, Xóa |
 | Minh | Thành viên | Chức năng Hiển thị dạng bảng, Thống kê, Sắp xếp/Lọc, hoàn thiện README |
-
+Repo: https://github.com/quanbt4567/ManageFootballPlayer
 > Ghi chú: mỗi thành viên tự commit bằng tài khoản GitHub cá nhân, commit message rõ ràng
 > (`feat: ...`, `fix: ...`).
 
