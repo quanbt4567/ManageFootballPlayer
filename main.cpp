@@ -127,7 +127,20 @@ void xoaCauThu()
 /* ===== Minh ===== */
 void hienThiDanhSach()
 {
-    printf("Chua trien khai\n");
+        if (soLuong == 0)
+    {
+        printf("Danh sach trong!\n");
+        return;
+    }
+
+    printf("%-8s%-20s%-10s%-8s%-6s%-11s%-8s\n", "Ma", "Ho ten", "Vi tri", "So ao", "Tuoi", "Ban thang", "Luong");
+    printf("-----------------------------------------------------------------------\n");
+    for (int i = 0; i < soLuong; i++)
+    {
+        printf("%-8s%-20s%-10s%-8d%-6d%-11d%-8.1f\n",
+               doiBong[i].maCT, doiBong[i].hoTen, doiBong[i].viTri,
+               doiBong[i].soAo, doiBong[i].tuoi, doiBong[i].soBanThang, doiBong[i].luongTuan);
+    }
 }
 
 void thongKe()
