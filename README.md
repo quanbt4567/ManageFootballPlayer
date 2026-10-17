@@ -36,7 +36,7 @@ Giao diện dòng lệnh (Console). Không dùng cơ sở dữ liệu, giao di�
 
 | Họ tên | Vai trò | Công việc phụ trách |
 |---|---|---|
-| Quân | Trưởng nhóm | Tạo repo, struct `CauThu` + menu, chức năng Thêm mới, validate nhập liệu |
+| Minh Quân | Trưởng nhóm | Tạo repo, struct `CauThu` + menu, chức năng Thêm mới, validate nhập liệu |
 | Long | Thành viên | Chức năng Tìm kiếm (theo mã/tên), Cập nhật, Xóa |
 | Minh | Thành viên | Chức năng Hiển thị dạng bảng, Thống kê, Sắp xếp/Lọc, hoàn thiện README |
 
