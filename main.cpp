@@ -64,9 +64,9 @@ int main(void)
         printf("3. Tim kiem cau thu (theo ma / ten)\n");
         printf("4. Cap nhat thong tin cau thu (theo ma)\n");
         printf("5. Xoa cau thu (theo ma)\n");
-        printf("6. Thong ke (chua trien khai)\n");
-        printf("7. Sap xep (chua trien khai)\n");
-        printf("8. Loc cau thu (chua trien khai)\n");
+        printf("6. Thong ke\n");
+        printf("7. Sap xep\n");
+        printf("8. Loc cau thu\n");
         printf("0. Thoat\n");
 
         if (!nhapSo("Nhap lua chon: ", 0, 8, &luaChon))
