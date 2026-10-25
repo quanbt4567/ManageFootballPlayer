@@ -1,103 +1,494 @@
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
-/* ===== STRUCT (da chot) ===== */
+#define MAX_CAU_THU 100
+
+/* ===== STRUCT: giu nguyen 7 truong da thong nhat ===== */
 typedef struct
 {
-    char maCT[10];      // "CT001" - khoa chinh de tim/sua/xoa
+    char maCT[10];
     char hoTen[50];
-    char viTri[20];     // "Tien dao", "Tien ve", "Hau ve", "Thu mon"
-    int soAo;           // 1 - 99
-    int tuoi;           // 16 - 45
-    int soBanThang;     // >= 0
-    float luongTuan;    // >= 0, don vi: trieu dong/tuan
+    char viTri[20];
+    int soAo;
+    int tuoi;
+    int soBanThang;
+    float luongTuan;
 } CauThu;
 
 /* ===== BIEN TOAN CUC ===== */
-CauThu doiBong[100];
+CauThu doiBong[MAX_CAU_THU];
 int soLuong = 0;
+
+void taiDuLieu(void);
+void luuDuLieu(void);
+
+/* ===== FUNCTION PROTOTYPES ===== */
+void boKyTuThua(void);
+int nhapDong(const char thongBao[], char noiDung[], int kichThuoc);
+void xoaKhoangTrang(char chuoi[]);
+int chuoiRong(char chuoi[]);
+int laBlank(char chuoi[]);
+int tenHopLe(char ten[]);
+int maHopLe(char ma[]);
 int kiemTraMaTrung(char maCanKiem[]);
-/* ===== Quan ===== */
-void themCauThu()
+int nhapMa(const char thongBao[], char ma[]);
+int nhapTen(const char thongBao[], char ten[], int kichThuoc);
+int nhapChuoiBatBuoc(const char thongBao[], char chuoi[], int kichThuoc);
+int nhapSo(const char thongBao[], int min, int max, int *so);
+int nhapSoKhongAm(const char thongBao[], int *so);
+int nhapLuong(const char thongBao[], float *luong);
+int timViTriMa(char ma[]);
+void inThongTinCauThu(CauThu ct);
+void themCauThu(void);
+void timKiemCauThu(void);
+void capNhatCauThu(void);
+void xoaCauThu(void);
+void hienThiDanhSach(void);
+void thongKe(void);
+void sapXep(void);
+void locCauThu(void);
+
+/* ===== MAIN - MENU ===== */
+int main(void)
 {
-    if (soLuong >= 100)
+    int luaChon;
+
+    taiDuLieu();
+
+    do
     {
-        printf("Danh sach da day\n");
+        printf("\n===== QUAN LY CAU THU =====\n");
+        printf("1. Them cau thu moi\n");
+        printf("2. Hien thi danh sach cau thu\n");
+        printf("3. Tim kiem cau thu (theo ma / ten)\n");
+        printf("4. Cap nhat thong tin cau thu (theo ma)\n");
+        printf("5. Xoa cau thu (theo ma)\n");
+        printf("6. Thong ke (chua trien khai)\n");
+        printf("7. Sap xep (chua trien khai)\n");
+        printf("8. Loc cau thu (chua trien khai)\n");
+        printf("0. Thoat\n");
+
+        if (!nhapSo("Nhap lua chon: ", 0, 8, &luaChon))
+        {
+            break;
+        }
+
+        switch (luaChon)
+        {
+            case 1: themCauThu(); break;
+            case 2: hienThiDanhSach(); break;
+            case 3: timKiemCauThu(); break;
+            case 4: capNhatCauThu(); break;
+            case 5: xoaCauThu(); break;
+            case 6: thongKe(); break;
+            case 7: sapXep(); break;
+            case 8: locCauThu(); break;
+            case 0: printf("Chao tam biet!\n"); break;
+        }
+    }
+    while (luaChon != 0);
+
+    return 0;
+}
+
+/* ===== LUU VA DOC DU LIEU CAU THU ===== */
+void taiDuLieu(void)
+{
+    FILE *f = fopen("cauthu.txt", "r");
+    char dong[256];
+    CauThu ct;
+
+    if (f == NULL)
+        return;
+
+    while (soLuong < MAX_CAU_THU && fgets(dong, sizeof(dong), f) != NULL)
+    {
+        if (sscanf(dong, "%9[^|]|%49[^|]|%19[^|]|%d|%d|%d|%f",
+                   ct.maCT, ct.hoTen, ct.viTri,
+                   &ct.soAo, &ct.tuoi, &ct.soBanThang,
+                   &ct.luongTuan) == 7)
+        {
+            doiBong[soLuong] = ct;
+            soLuong++;
+        }
+    }
+
+    fclose(f);
+}
+
+void luuDuLieu(void)
+{
+    FILE *f = fopen("cauthu.txt", "w");
+    int i;
+
+    if (f == NULL)
+    {
+        printf("Loi: khong the luu du lieu vao file!\n");
         return;
     }
 
-    CauThu moi;
-
-    do
+    for (i = 0; i < soLuong; i++)
     {
-        printf("Nhap ma cau thu (VD: CT001): ");
-        scanf("%9s", moi.maCT);
-        if (kiemTraMaTrung(moi.maCT) == 1)
-        {
-            printf("Ma da ton tai! Moi nhap lai.\n");
-        }
+        fprintf(f, "%s|%s|%s|%d|%d|%d|%.2f\n",
+                doiBong[i].maCT,
+                doiBong[i].hoTen,
+                doiBong[i].viTri,
+                doiBong[i].soAo,
+                doiBong[i].tuoi,
+                doiBong[i].soBanThang,
+                doiBong[i].luongTuan);
     }
-    while (kiemTraMaTrung(moi.maCT) == 1);
 
-    printf("Nhap ho ten: ");
-    scanf(" %49[^\n]", moi.hoTen);
-
-    printf("Nhap vi tri: ");
-    scanf(" %19[^\n]", moi.viTri);
-
-    do
-    {
-        printf("Nhap so ao (1-99): ");
-        scanf("%d", &moi.soAo);
-        if (moi.soAo < 1 || moi.soAo > 99)
-        {
-            printf("So ao phai tu 1 den 99! Moi nhap lai.\n");
-        }
-    }
-    while (moi.soAo < 1 || moi.soAo > 99);
-
-    do
-    {
-        printf("Nhap tuoi (16-45): ");
-        scanf("%d", &moi.tuoi);
-        if (moi.tuoi < 16 || moi.tuoi > 45)
-        {
-            printf("Tuoi phai tu 16 den 45! Moi nhap lai.\n");
-        }
-    }
-    while (moi.tuoi < 16 || moi.tuoi > 45);
-
-    do
-    {
-        printf("Nhap so ban thang (>= 0): ");
-        scanf("%d", &moi.soBanThang);
-        if (moi.soBanThang < 0)
-        {
-            printf("So ban thang khong duoc am! Moi nhap lai.\n");
-        }
-    }
-    while (moi.soBanThang < 0);
-
-    do
-    {
-        printf("Nhap luong tuan (trieu dong, >= 0): ");
-        scanf("%f", &moi.luongTuan);
-        if (moi.luongTuan < 0)
-        {
-            printf("Luong tuan khong duoc am! Moi nhap lai.\n");
-        }
-    }
-    while (moi.luongTuan < 0);
-
-    doiBong[soLuong] = moi;
-    soLuong++;
-    printf("Them cau thu thanh cong!\n");
-
+    fclose(f);
 }
 
+/* ===== CAC HAM NHAP DU LIEU CO BAN ===== */
+
+void boKyTuThua(void)
+{
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF)
+    {
+
+    }
+}
+
+int nhapDong(const char thongBao[], char noiDung[], int kichThuoc)
+{
+    int i;
+
+    printf("%s", thongBao);
+    if (fgets(noiDung, kichThuoc, stdin) == NULL)
+    {
+        return 0;
+    }
+
+    for (i = 0; noiDung[i] != '\0'; i++)
+    {
+        if (noiDung[i] == '\n')
+        {
+            noiDung[i] = '\0';
+            return 1;
+        }
+    }
+
+    if (!feof(stdin))
+    {
+        boKyTuThua();
+        printf("Du lieu qua dai, vui long nhap lai.\n");
+        return -1;
+    }
+
+    return 1;
+}
+
+void xoaKhoangTrang(char chuoi[])
+{
+    int dau = 0;
+    int cuoi = 0;
+
+    while (chuoi[dau] == ' ' || chuoi[dau] == '\t')
+    {
+        dau++;
+    }
+
+    while (chuoi[dau] != '\0')
+    {
+        chuoi[cuoi] = chuoi[dau];
+        cuoi++;
+        dau++;
+    }
+    chuoi[cuoi] = '\0';
+
+    while (cuoi > 0 && (chuoi[cuoi - 1] == ' ' || chuoi[cuoi - 1] == '\t'))
+    {
+        cuoi--;
+        chuoi[cuoi] = '\0';
+    }
+}
+
+int chuoiRong(char chuoi[])
+{
+    int i;
+    for (i = 0; chuoi[i] != '\0'; i++)
+    {
+        if (chuoi[i] != ' ' && chuoi[i] != '\t')
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int laBlank(char chuoi[])
+{
+    int i;
+    char tuBlank[] = "blank";
+
+    if (strlen(chuoi) != 5)
+    {
+        return 0;
+    }
+
+    for (i = 0; i < 5; i++)
+    {
+        if (tolower((unsigned char)chuoi[i]) != tuBlank[i])
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int tenHopLe(char ten[])
+{
+    int i;
+    int coChu = 0;
+
+    for (i = 0; ten[i] != '\0'; i++)
+    {
+        char c = ten[i];
+
+        if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+        {
+            coChu = 1;
+        }
+        else if (c == ' ' || c == '-' || c == '\'' || c == '.')
+        {
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    return coChu;
+}
+
+int maHopLe(char ma[])
+{
+    int i;
+    int doDai = (int)strlen(ma);
+
+    if (doDai < 2 || doDai > 9)
+    {
+        return 0;
+    }
+
+    for (i = 0; ma[i] != '\0'; i++)
+    {
+        if (!((ma[i] >= 'A' && ma[i] <= 'Z') ||
+              (ma[i] >= 'a' && ma[i] <= 'z') ||
+              (ma[i] >= '0' && ma[i] <= '9')))
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int nhapMa(const char thongBao[], char ma[])
+{
+    char dong[100];
+    int ketQua;
+
+    while (1)
+    {
+        ketQua = nhapDong(thongBao, dong, 100);
+        if (ketQua == 0)
+        {
+            return 0;
+        }
+        if (ketQua == -1)
+        {
+            continue;
+        }
+
+        if (!maHopLe(dong))
+        {
+            printf("Ma chi gom 2-9 ky tu chu cai va chu so, khong co khoang trang hay ky tu dac biet.\n");
+            continue;
+        }
+
+        strcpy(ma, dong);
+        return 1;
+    }
+}
+
+int nhapTen(const char thongBao[], char ten[], int kichThuoc)
+{
+    int ketQua;
+
+    while (1)
+    {
+        ketQua = nhapDong(thongBao, ten, kichThuoc);
+        if (ketQua == 0)
+        {
+            return 0;
+        }
+        if (ketQua == -1)
+        {
+            continue;
+        }
+
+        xoaKhoangTrang(ten);
+
+        if (chuoiRong(ten) || laBlank(ten))
+        {
+            printf("Khong duoc de trong hoac nhap tu blank. Vui long nhap lai.\n");
+            continue;
+        }
+
+        if (!tenHopLe(ten))
+        {
+            printf("Ten/vi tri chi dung chu cai khong dau, khoang trang, dau -, dau nhay hoac dau cham.\n");
+            continue;
+        }
+
+        return 1;
+    }
+}
+
+int nhapChuoiBatBuoc(const char thongBao[], char chuoi[], int kichThuoc)
+{
+    int ketQua;
+
+    while (1)
+    {
+        ketQua = nhapDong(thongBao, chuoi, kichThuoc);
+        if (ketQua == 0)
+        {
+            return 0;
+        }
+        if (ketQua == -1)
+        {
+            continue;
+        }
+
+        xoaKhoangTrang(chuoi);
+        if (chuoiRong(chuoi) || laBlank(chuoi))
+        {
+            printf("Khong duoc de trong hoac nhap tu blank. Vui long nhap lai.\n");
+            continue;
+        }
+        return 1;
+    }
+}
+
+int nhapSo(const char thongBao[], int min, int max, int *so)
+{
+    char dong[100];
+    char kyTuThem;
+    int giaTri;
+    int ketQua;
+
+    while (1)
+    {
+        ketQua = nhapDong(thongBao, dong, 100);
+        if (ketQua == 0)
+        {
+            return 0;
+        }
+        if (ketQua == -1)
+        {
+            continue;
+        }
+
+        if (sscanf(dong, "%d %c", &giaTri, &kyTuThem) != 1)
+        {
+            printf("Vui long nhap mot so nguyen.\n");
+            continue;
+        }
+
+        if (giaTri < min || giaTri > max)
+        {
+            printf("Gia tri phai tu %d den %d. Vui long nhap lai.\n", min, max);
+            continue;
+        }
+
+        *so = giaTri;
+        return 1;
+    }
+}
+
+int nhapSoKhongAm(const char thongBao[], int *so)
+{
+    char dong[100];
+    char kyTuThem;
+    int giaTri;
+    int ketQua;
+
+    while (1)
+    {
+        ketQua = nhapDong(thongBao, dong, 100);
+        if (ketQua == 0)
+        {
+            return 0;
+        }
+        if (ketQua == -1)
+        {
+            continue;
+        }
+
+        if (sscanf(dong, "%d %c", &giaTri, &kyTuThem) != 1)
+        {
+            printf("Vui long nhap mot so nguyen.\n");
+            continue;
+        }
+
+        if (giaTri < 0 || giaTri > 980)
+        {
+            printf("So ban thang phai tu 0 den 980. Vui long nhap lai.\n");
+            continue;
+        }
+
+        *so = giaTri;
+        return 1;
+    }
+}
+
+int nhapLuong(const char thongBao[], float *luong)
+{
+    char dong[100];
+    char kyTuThem;
+    float giaTri;
+    int ketQua;
+
+    while (1)
+    {
+        ketQua = nhapDong(thongBao, dong, 100);
+        if (ketQua == 0)
+        {
+            return 0;
+        }
+        if (ketQua == -1)
+        {
+            continue;
+        }
+
+        if (sscanf(dong, "%f %c", &giaTri, &kyTuThem) != 1)
+        {
+            printf("Vui long nhap mot so.\n");
+            continue;
+        }
+
+        if (!(giaTri >= 0))
+        {
+            printf("Luong tuan phai lon hon hoac bang 0. Vui long nhap lai.\n");
+            continue;
+        }
+
+        *luong = giaTri;
+        return 1;
+    }
+}
+
+/* ===== QUAN: THEM CAU THU ===== */
 int kiemTraMaTrung(char maCanKiem[])
 {
-    for (int i = 0; i < soLuong; i++)
+    int i;
+    for (i = 0; i < soLuong; i++)
     {
         if (strcmp(doiBong[i].maCT, maCanKiem) == 0)
         {
@@ -107,14 +498,52 @@ int kiemTraMaTrung(char maCanKiem[])
     return 0;
 }
 
-
-/* ===== Long ===== */
-void timKiemCauThu()
+void themCauThu(void)
 {
-    //printf("Chua trien khai\n");
+    CauThu moi;
 
-    int kieu, c, i, j, k, len, hopLe, khop, thay = 0;
-    char key[100], chuoi[50];
+    if (soLuong >= MAX_CAU_THU)
+    {
+        printf("Danh sach da day.\n");
+        return;
+    }
+
+    while (1)
+    {
+        if (!nhapMa("Nhap ma cau thu (VD: CT001): ", moi.maCT))
+        {
+            return;
+        }
+        if (kiemTraMaTrung(moi.maCT))
+        {
+            printf("Ma da ton tai! Moi nhap lai.\n");
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    if (!nhapTen("Nhap ho ten: ", moi.hoTen, 50)) return;
+    if (!nhapTen("Nhap vi tri: ", moi.viTri, 20)) return;
+    if (!nhapSo("Nhap so ao (1-99): ", 1, 99, &moi.soAo)) return;
+    if (!nhapSo("Nhap tuoi (16-45): ", 16, 45, &moi.tuoi)) return;
+    if (!nhapSoKhongAm("Nhap so ban thang (0-980): ", &moi.soBanThang)) return;
+    if (!nhapLuong("Nhap luong tuan (trieu dong, >= 0): ", &moi.luongTuan)) return;
+
+    doiBong[soLuong] = moi;
+    soLuong++;
+    luuDuLieu();
+    printf("Them cau thu thanh cong!\n");
+}
+
+/* ===== LONG: TIM KIEM CAU THU ===== */
+void timKiemCauThu(void)
+{
+    int kieu, i, thay = 0;
+    char key[100];
+    char chuoi[100];
+    int j;
 
     if (soLuong == 0)
     {
@@ -122,247 +551,92 @@ void timKiemCauThu()
         return;
     }
 
-    /* Chon kieu tim: bat nhap lai neu khong phai 1 hoac 2 */
-    do
+    if (!nhapSo("1. Tim theo ma\n2. Tim theo ten\nChon: ", 1, 2, &kieu)) return;
+
+    if (kieu == 1)
     {
-        printf("1. Tim theo ma\n2. Tim theo ten\nChon: ");
-        if (scanf("%d", &kieu) != 1)
-        {
-            kieu = 0;
-        }
-        while ((c = getchar()) != '\n' && c != EOF);
-        if (kieu != 1 && kieu != 2)
-        {
-            printf("Chi duoc nhap 1 hoac 2!\n");
-        }
+        if (!nhapMa("Nhap ma can tim: ", key)) return;
     }
-    while (kieu != 1 && kieu != 2);
-
-    /* Nhap tu khoa: kiem tra ky tu va khoang trang, sai thi nhap lai */
-    do
+    else
     {
-        hopLe = 1;
-        printf("Nhap tu khoa: ");
-        if (fgets(key, sizeof(key), stdin) == NULL)
-        {
-            return;
-        }
-        len = strlen(key);
-        if (key[len - 1] == '\n')
-        {
-            key[--len] = '\0';
-        }
-        else
-        {
-            while ((c = getchar()) != '\n' && c != EOF);  /* nhap qua dai */
-            hopLe = 0;
-        }
-
-        if (len == 0)
-        {
-            hopLe = 0;
-        }
-        else if (key[0] == ' ' || key[len - 1] == ' ')
-        {
-            hopLe = 0;  /* khoang trang o dau hoac cuoi */
-        }
-
-        for (j = 0; j < len && hopLe; j++)
-        {
-            if (key[j] == ' ')
-            {
-                if (kieu == 1 || key[j + 1] == ' ')
-                {
-                    hopLe = 0;  /* ma khong co khoang trang, ten khong co 2 khoang trang lien tiep */
-                }
-            }
-            else if (!((key[j] >= 'a' && key[j] <= 'z') || (key[j] >= 'A' && key[j] <= 'Z')))
-            {
-                if (kieu == 2 || key[j] < '0' || key[j] > '9')
-                {
-                    hopLe = 0;  /* ten chi chu cai; ma chi chu cai va so */
-                }
-            }
-        }
-
-        if (!hopLe)
-        {
-            if (kieu == 1)
-            {
-                printf("Nhap sai! Chi nhap chu cai (hoa hoac thuong) va so, khong co khoang trang.\n");
-            }
-            else
-            {
-                printf("Nhap sai! Chi nhap chu cai (hoa hoac thuong), cach nhau dung 1 khoang trang.\n");
-            }
-        }
-    }
-    while (!hopLe);
-
-    /* Doi tu khoa thanh chu thuong */
-    for (j = 0; key[j]; j++)
-    {
-        if (key[j] >= 'A' && key[j] <= 'Z')
-        {
-            key[j] = key[j] + 32;
-        }
+        if (!nhapChuoiBatBuoc("Nhap ten hoac mot phan ten can tim: ", key, 100)) return;
     }
 
-    /* Duyet danh sach, so sanh khong phan biet hoa thuong */
     for (i = 0; i < soLuong; i++)
     {
         if (kieu == 1)
         {
-            strcpy(chuoi, doiBong[i].maCT);
+            if (strcmp(doiBong[i].maCT, key) == 0)
+            {
+                inThongTinCauThu(doiBong[i]);
+                thay = 1;
+            }
         }
         else
         {
             strcpy(chuoi, doiBong[i].hoTen);
-        }
-        for (k = 0; chuoi[k]; k++)
-        {
-            if (chuoi[k] >= 'A' && chuoi[k] <= 'Z')
+            for (j = 0; chuoi[j] != '\0'; j++)
             {
-                chuoi[k] = chuoi[k] + 32;
+                chuoi[j] = (char)tolower((unsigned char)chuoi[j]);
+            }
+            for (j = 0; key[j] != '\0'; j++)
+            {
+                key[j] = (char)tolower((unsigned char)key[j]);
+            }
+
+            if (strstr(chuoi, key) != NULL)
+            {
+                inThongTinCauThu(doiBong[i]);
+                thay = 1;
             }
         }
-
-        khop = 0;
-        if (kieu == 1 && strcmp(chuoi, key) == 0)
-        {
-            khop = 1;  /* ma: khop chinh xac */
-        }
-        if (kieu == 2 && strstr(chuoi, key) != NULL)
-        {
-            khop = 1;  /* ten: chi can chua tu khoa */
-        }
-
-        if (khop == 1)
-        {
-            printf("%s | %s | %s | ao so %d | %d tuoi | %d ban | luong %.1f trieu/tuan\n",
-                   doiBong[i].maCT, doiBong[i].hoTen, doiBong[i].viTri,
-                   doiBong[i].soAo, doiBong[i].tuoi, doiBong[i].soBanThang,
-                   doiBong[i].luongTuan);
-            thay = 1;
-        }
     }
-    if (thay == 0)
+
+    if (!thay)
     {
         printf("Khong tim thay cau thu nao!\n");
     }
 }
 
-//�ang tai phan code chuc nang cap nhat cau thu , neu doc toi day thi la dang xu ly cac phan khai bao
-
-	void boKyTuThua(void)
-		{
-		    int c;
-		    while ((c = getchar()) != '\n' && c != EOF);
-		}
-
-	int nhapMa(const char thongBao[], char ma[])
-		{
-		    printf("%s", thongBao);
-
-		    if (scanf("%9s", ma) != 1)
-		        return 0;
-
-		    boKyTuThua();
-		    return 1;
-		}
-	int timViTriMa(char ma[])
-		{
-		    int i;
-
-		    for (i = 0; i < soLuong; i++)
-		    {
-		        if (strcmp(doiBong[i].maCT, ma) == 0)
-		        {
-		            return i;
-		        }
-		    }
-
-		    return -1;
-		}
-	void inThongTinCauThu(CauThu ct)
-		{
-		    printf("Ma cau thu: %s\n", ct.maCT);
-		    printf("Ho ten: %s\n", ct.hoTen);
-		    printf("Vi tri: %s\n", ct.viTri);
-		    printf("So ao: %d\n", ct.soAo);
-		    printf("Tuoi: %d\n", ct.tuoi);
-		    printf("So ban thang: %d\n", ct.soBanThang);
-		    printf("Luong tuan: %.1f trieu dong\n", ct.luongTuan);
-		}
-	int nhapTen(const char thongBao[], char ten[], int kichThuoc)
-		{
-		    printf("%s", thongBao);
-
-		    if (fgets(ten, kichThuoc, stdin) == NULL)
-		        return 0;
-
-		    ten[strcspn(ten, "\n")] = '\0';
-
-		    return 1;
-		}
-	int nhapSo(const char thongBao[], int min, int max, int *so)
-		{
-		    printf("%s", thongBao);
-
-		    if (scanf("%d", so) != 1)
-		    {
-		        int c;
-		        while ((c = getchar()) != '\n' && c != EOF);
-		        return 0;
-		    }
-
-		    if (*so < min || *so > max)
-		    {
-		        printf("Gia tri khong hop le!\n");
-		        return 0;
-		    }
-
-		    return 1;
-		}
-	int nhapLuong(const char thongBao[], float *luong)
-		{
-		    printf("%s", thongBao);
-
-		    if (scanf("%f", luong) != 1)
-		    {
-		        int c;
-		        while ((c = getchar()) != '\n' && c != EOF);
-		        return 0;
-		    }
-
-		    if (*luong < 0)
-		    {
-		        printf("Luong khong duoc am!\n");
-		        return 0;
-		    }
-
-		    return 1;
-		}
-
-void capNhatCauThu()
+/* ===== CAC HAM DUNG CHUNG CHO CAP NHAT / XOA ===== */
+int timViTriMa(char ma[])
 {
-    //printf("Chua trien khai\n");
-      int vt, soAo, tuoi, soBanThang;
+    int i;
+    for (i = 0; i < soLuong; i++)
+    {
+        if (strcmp(doiBong[i].maCT, ma) == 0)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void inThongTinCauThu(CauThu ct)
+{
+    printf("Ma cau thu: %s\n", ct.maCT);
+    printf("Ho ten: %s\n", ct.hoTen);
+    printf("Vi tri: %s\n", ct.viTri);
+    printf("So ao: %d\n", ct.soAo);
+    printf("Tuoi: %d\n", ct.tuoi);
+    printf("So ban thang: %d\n", ct.soBanThang);
+    printf("Luong tuan: %.1f trieu dong\n", ct.luongTuan);
+}
+
+/* ===== CAP NHAT CAU THU ===== */
+void capNhatCauThu(void)
+{
+    int vt, soAo, tuoi, soBanThang;
     float luong;
-    char ma[100], hoTen[50], viTri[20];
+    char ma[10], hoTen[50], viTri[20];
 
     if (soLuong == 0)
     {
         printf("Danh sach dang trong!\n");
         return;
     }
-    boKyTuThua();
 
-    if (nhapMa("Nhap ma cau thu can cap nhat: ", ma) == 0)
-    {
-        return;
-    }
-
+    if (!nhapMa("Nhap ma cau thu can cap nhat: ", ma)) return;
     vt = timViTriMa(ma);
 
     if (vt == -1)
@@ -373,26 +647,14 @@ void capNhatCauThu()
 
     printf("Thong tin hien tai:\n");
     inThongTinCauThu(doiBong[vt]);
-
     printf("Nhap thong tin moi (ma cau thu khong doi):\n");
 
-    if (nhapTen("Nhap ho ten: ", hoTen, 50) == 0)
-        return;
-
-    if (nhapTen("Nhap vi tri: ", viTri, 20) == 0)
-        return;
-
-    if (nhapSo("Nhap so ao (1-99): ", 1, 99, &soAo) == 0)
-        return;
-
-    if (nhapSo("Nhap tuoi (16-45): ", 16, 45, &tuoi) == 0)
-        return;
-
-    if (nhapSo("Nhap so ban thang (>= 0): ", 0, 999, &soBanThang) == 0)
-        return;
-
-    if (nhapLuong("Nhap luong tuan (trieu dong, >= 0): ", &luong) == 0)
-        return;
+    if (!nhapTen("Nhap ho ten: ", hoTen, 50)) return;
+    if (!nhapTen("Nhap vi tri: ", viTri, 20)) return;
+    if (!nhapSo("Nhap so ao (1-99): ", 1, 99, &soAo)) return;
+    if (!nhapSo("Nhap tuoi (16-45): ", 16, 45, &tuoi)) return;
+    if (!nhapSoKhongAm("Nhap so ban thang (0-980): ", &soBanThang)) return;
+    if (!nhapLuong("Nhap luong tuan (trieu dong, >= 0): ", &luong)) return;
 
     strcpy(doiBong[vt].hoTen, hoTen);
     strcpy(doiBong[vt].viTri, viTri);
@@ -401,13 +663,14 @@ void capNhatCauThu()
     doiBong[vt].soBanThang = soBanThang;
     doiBong[vt].luongTuan = luong;
 
+    luuDuLieu();
     printf("Cap nhat cau thu thanh cong!\n");
 }
 
-void xoaCauThu()
+/* ===== XOA CAU THU ===== */
+void xoaCauThu(void)
 {
-   // printf("Chua trien khai\n");
-   char ma[100];
+    char ma[10];
     int vt, i;
 
     if (soLuong == 0)
@@ -416,13 +679,7 @@ void xoaCauThu()
         return;
     }
 
-    boKyTuThua();
-
-    if (nhapMa("Nhap ma cau thu can xoa: ", ma) == 0)
-    {
-        return;
-    }
-
+    if (!nhapMa("Nhap ma cau thu can xoa: ", ma)) return;
     vt = timViTriMa(ma);
 
     if (vt == -1)
@@ -438,101 +695,47 @@ void xoaCauThu()
     {
         doiBong[i] = doiBong[i + 1];
     }
-
     soLuong--;
-
+    luuDuLieu();
     printf("Xoa cau thu thanh cong!\n");
 }
 
-
-/* ===== Minh ===== */
-
-void hienThiDanhSach()
+/* ===== MINH: HIEN THI DANH SACH ===== */
+void hienThiDanhSach(void)
 {
-        if (soLuong == 0)
+    int i;
+
+    if (soLuong == 0)
     {
         printf("Danh sach trong!\n");
         return;
     }
 
-    printf("%-8s%-20s%-10s%-8s%-6s%-11s%-8s\n", "Ma", "Ho ten", "Vi tri", "So ao", "Tuoi", "Ban thang", "Luong");
-    printf("-----------------------------------------------------------------------\n");
-    for (int i = 0; i < soLuong; i++)
+    printf("%-8s %-20s %-18s %-8s %-6s %-12s %-12s\n",
+           "Ma", "Ho ten", "Vi tri", "So ao", "Tuoi", "Ban thang", "Luong/tuan");
+    printf("--------------------------------------------------------------------------------\n");
+
+    for (i = 0; i < soLuong; i++)
     {
-        printf("%-8s%-20s%-10s%-8d%-6d%-11d%-8.1f\n",
+        printf("%-8s %-20s %-18s %-8d %-6d %-12d %-12.1f\n",
                doiBong[i].maCT, doiBong[i].hoTen, doiBong[i].viTri,
-               doiBong[i].soAo, doiBong[i].tuoi, doiBong[i].soBanThang, doiBong[i].luongTuan);
+               doiBong[i].soAo, doiBong[i].tuoi,
+               doiBong[i].soBanThang, doiBong[i].luongTuan);
     }
 }
 
-void thongKe()
+/* ===== CAC HAM NAY DE NGUYEN CHUA TRIEN KHAI ===== */
+void thongKe(void)
 {
     printf("Chua trien khai\n");
 }
 
-void sapXep()
+void sapXep(void)
 {
     printf("Chua trien khai\n");
 }
 
-void locCauThu()
+void locCauThu(void)
 {
     printf("Chua trien khai\n");
-}
-
-/* ===== HAM MAIN - menu (Quan) ===== */
-int main()
-{
-    printf("Chuong trinh quan ly cau thu - struct da san sang!\n");
-    int luaChon = 0;
-    do
-    {
-        printf("1. Them cau thu moi\n");
-        printf("2. Hien thi danh sach cau thu\n");
-        printf("3. Tim kiem cau thu (theo ma / ten)\n");
-        printf("4. Cap nhat thong tin cau thu (theo ma)\n");
-        printf("5. Xoa cau thu (theo ma)\n");
-        printf("6. Thong ke (tong ban thang, tong quy luong, luong trung binh, vua pha luoi)\n");
-        printf("7. Sap xep\n");
-        printf("8. Loc cau thu\n");
-        printf("0. Thoat\n");
-        printf("\n");
-        printf("Nhap lua chon cua ban: ");
-        scanf("%d", &luaChon);
-
-        switch (luaChon)
-        {
-        case 1:
-            themCauThu();
-            break;
-        case 2:
-            hienThiDanhSach();
-            break;
-        case 3:
-            timKiemCauThu();
-            break;
-        case 4:
-            capNhatCauThu();
-            break;
-        case 5:
-            xoaCauThu();
-            break;
-        case 6:
-            thongKe();
-            break;
-        case 7:
-            sapXep();
-            break;
-        case 8:
-            locCauThu();
-            break;
-        case 0:
-            printf("Chao tam biet\n");
-            break;
-        default:
-            printf("Lua chon khong hop le!\n");
-        }
-    }
-    while (luaChon != 0);
-    return 0;
 }
