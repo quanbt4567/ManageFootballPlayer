@@ -145,17 +145,139 @@ void hienThiDanhSach()
 
 void thongKe()
 {
-    printf("Chua trien khai\n");
+        if (soLuong == 0)
+    {
+        printf("Danh sach trong!\n");
+        return;
+    }
+
+    int tongBanThang = 0;
+    float tongLuong = 0;
+    int maxBanThang = doiBong[0].soBanThang;
+
+    for (int i = 0; i < soLuong; i++)
+    {
+        tongBanThang += doiBong[i].soBanThang;
+        tongLuong += doiBong[i].luongTuan;
+        if (doiBong[i].soBanThang > maxBanThang)
+        {
+            maxBanThang = doiBong[i].soBanThang;
+        }
+    }
+
+    printf("Tong so ban thang: %d\n", tongBanThang);
+    printf("Tong quy luong/tuan: %.1f trieu dong\n", tongLuong);
+    printf("Luong trung binh: %.1f trieu dong/tuan\n", tongLuong / soLuong);
+
+    if (maxBanThang == 0)
+    {
+        printf("Vua pha luoi: chua co ai ghi ban\n");
+        return;
+    }
+    printf("Vua pha luoi (%d ban thang):\n", maxBanThang);
+    for (int i = 0; i < soLuong; i++)
+    {
+        if (doiBong[i].soBanThang == maxBanThang)
+        {
+            printf("  - %s (%s)\n", doiBong[i].hoTen, doiBong[i].maCT);
+        }
+    }
 }
 
 void sapXep()
 {
-    printf("Chua trien khai\n");
+        if (soLuong == 0)
+    {
+        printf("Danh sach trong!\n");
+        return;
+    }
+
+    // Giam dan theo so ban thang; bang nhau thi theo ma tang dan
+    for (int i = 0; i < soLuong - 1; i++)
+    {
+        for (int j = i + 1; j < soLuong; j++)
+        {
+            int doiCho = 0;
+            if (doiBong[j].soBanThang > doiBong[i].soBanThang)
+            {
+                doiCho = 1;
+            }
+            else if (doiBong[j].soBanThang == doiBong[i].soBanThang
+                     && strcmp(doiBong[j].maCT, doiBong[i].maCT) < 0)
+            {
+                doiCho = 1;
+            }
+
+            if (doiCho == 1)
+            {
+                CauThu tam = doiBong[i];
+                doiBong[i] = doiBong[j];
+                doiBong[j] = tam;
+            }
+        }
+    }
+
+    printf("Da sap xep theo so ban thang giam dan (bang nhau thi theo ma).\n");
+    hienThiDanhSach();
 }
 
 void locCauThu()
 {
-    printf("Chua trien khai\n");
+        if (soLuong == 0)
+    {
+        printf("Danh sach trong!\n");
+        return;
+    }
+
+    int chon = 0;
+    printf("Chon vi tri can loc:\n");
+    printf("1. Tien dao\n2. Tien ve\n3. Hau ve\n4. Thu mon\n");
+    printf("Nhap lua chon (1-4): ");
+    if (scanf("%d", &chon) != 1 || chon < 1 || chon > 4)
+    {
+        printf("Lua chon khong hop le!\n");
+        int kyTu;
+        while ((kyTu = getchar()) != '\n' && kyTu != EOF)
+        {
+        }
+        return;
+    }
+
+    const char *viTriLoc = "Tien dao";
+    if (chon == 2)
+    {
+        viTriLoc = "Tien ve";
+    }
+    else if (chon == 3)
+    {
+        viTriLoc = "Hau ve";
+    }
+    else if (chon == 4)
+    {
+        viTriLoc = "Thu mon";
+    }
+
+    int soKetQua = 0;
+    for (int i = 0; i < soLuong; i++)
+    {
+        if (strcmp(doiBong[i].viTri, viTriLoc) == 0)
+        {
+            if (soKetQua == 0)
+            {
+                printf("%-8s%-20s%-10s%-8s%-6s%-11s%-8s\n", "Ma", "Ho ten", "Vi tri", "So ao", "Tuoi", "Ban thang", "Luong");
+                printf("-----------------------------------------------------------------------\n");
+            }
+            printf("%-8s%-20s%-10s%-8d%-6d%-11d%-8.1f\n",
+                   doiBong[i].maCT, doiBong[i].hoTen, doiBong[i].viTri,
+                   doiBong[i].soAo, doiBong[i].tuoi, doiBong[i].soBanThang, doiBong[i].luongTuan);
+            soKetQua++;
+        }
+    }
+
+    if (soKetQua == 0)
+    {
+        printf("Khong co cau thu nao o vi tri %s!\n", viTriLoc);
+    }
 }
 
 /* ===== HAM MAIN - menu (Quan) ===== */
