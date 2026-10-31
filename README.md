@@ -33,9 +33,7 @@ khoảng trắng, dấu `-`, `'` hoặc `.`; mọi ô nhập sai đều bắt nh
 ```
 .
 ├── main.cpp            # mã nguồn chính (viết bằng C, đuôi .cpp)
-├── cauthu.txt          # dữ liệu cầu thủ (tự tạo khi chạy, định dạng ma|ten|viTri|soAo|tuoi|banThang|luong)
 ├── README.md           # tài liệu dự án
-├── .gitignore          # loại trừ file biên dịch
 └── screenshots/        # ảnh chụp màn hình demo
 ```
 
