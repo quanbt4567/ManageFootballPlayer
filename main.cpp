@@ -1146,9 +1146,11 @@ void thongKe(void)
         }
     }
 
-    printf("Tong so ban thang: %d\n", tongBanThang);
-    printf("Tong quy luong/tuan: %.1f trieu dong\n", tongLuong);
-    printf("Luong trung binh: %.1f trieu dong/tuan\n", tongLuong / soLuong);
+    printf("%-24s %s\n", "Chi tieu", "Gia tri");
+    printf("--------------------------------------------\n");
+    printf("%-24s %d\n", "Tong so ban thang", tongBanThang);
+    printf("%-24s %.1f trieu dong\n", "Tong quy luong/tuan", tongLuong);
+    printf("%-24s %.1f trieu dong/tuan\n", "Luong trung binh", tongLuong / soLuong);
 
     if (maxBanThang == 0)
     {
@@ -1156,11 +1158,12 @@ void thongKe(void)
         return;
     }
     printf("Vua pha luoi (%d ban thang):\n", maxBanThang);
+    inTieuDeBang();
     for (i = 0; i < soLuong; i++)
     {
         if (doiBong[i].soBanThang == maxBanThang)
         {
-            printf("  - %s (%s)\n", doiBong[i].hoTen, doiBong[i].maCT);
+            inHangCauThu(doiBong[i]);
         }
     }
 }

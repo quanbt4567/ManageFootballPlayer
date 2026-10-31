@@ -6,7 +6,7 @@ Dự án cuối khóa môn Lập trình C/C++ — ứng dụng console quản l�
 
 Chương trình cho phép quản lý thông tin cầu thủ (mã, họ tên, vị trí, số áo, tuổi, số bàn thắng, lương tuần).
 Dữ liệu lưu trong `struct` kết hợp mảng một chiều tĩnh (tối đa 100 cầu thủ) và được ghi ra file
-`cauthu.txt` sau mỗi lần thêm/sửa/xóa; khi khởi động, chương trình đọc lại file này nên dữ liệu
+`cauthu.txt` sau mỗi lần thêm/sửa/xóa/sắp xếp; khi khởi động, chương trình đọc lại file này nên dữ liệu
 không bị mất khi thoát. Người dùng thao tác qua menu điều khiển lặp (do-while + switch-case)
 với đầy đủ chức năng CRUD, tìm kiếm, thống kê, sắp xếp và lọc.
 
@@ -15,14 +15,18 @@ Giao diện dòng lệnh (Console). Không dùng cơ sở dữ liệu, giao di�
 
 ## Tính năng
 
-1. Thêm cầu thủ mới (kiểm tra mã trùng, validate dữ liệu nhập)
+1. Thêm cầu thủ mới (kiểm tra trùng mã, trùng số áo, validate dữ liệu nhập; nhập `0` để hủy)
 2. Hiển thị danh sách cầu thủ dạng bảng
-3. Tìm kiếm cầu thủ theo mã (chính xác) hoặc theo tên (tìm gần đúng, không phân biệt hoa thường)
-4. Cập nhật thông tin cầu thủ theo mã
-5. Xóa cầu thủ theo mã
-6. Thống kê: tổng số bàn thắng, tổng quỹ lương/tuần, lương trung bình, vua phá lưới
-7. Sắp xếp cầu thủ theo số bàn thắng giảm dần (đồng bàn thắng thì theo mã tăng dần)
-8. Lọc cầu thủ theo vị trí (Tiền đạo / Tiền vệ / Hậu vệ / Thủ môn)
+3. Tìm kiếm cầu thủ theo mã (chính xác) hoặc theo tên (tìm gần đúng, không phân biệt hoa thường), kết quả dạng bảng
+4. Cập nhật thông tin cầu thủ theo mã (Enter để giữ nguyên từng trường, vị trí chọn 1 trong 4 giá trị)
+5. Xóa cầu thủ theo mã (có xác nhận y/n trước khi xóa)
+6. Thống kê dạng bảng: tổng số bàn thắng, tổng quỹ lương/tuần, lương trung bình, vua phá lưới
+7. Sắp xếp cầu thủ theo số bàn thắng giảm dần (đồng bàn thắng thì theo mã tăng dần), kết quả dạng bảng
+8. Lọc cầu thủ theo vị trí (Tiền đạo / Tiền vệ / Hậu vệ / Thủ môn), kết quả dạng bảng
+
+Quy tắc validate: vị trí chỉ nhận 1 trong 4 giá trị chuẩn; số áo 1–99 và không trùng; tuổi 16–45;
+số bàn thắng 0–980; lương tuần 0–1000 triệu đồng (chặn NaN và số âm); tên chỉ dùng chữ cái không dấu,
+khoảng trắng, dấu `-`, `'` hoặc `.`; mọi ô nhập sai đều bắt nhập lại.
 
 ## Cấu trúc thư mục
 
@@ -64,6 +68,10 @@ quanlycauthu.exe
 ![Menu chính](screenshots/menu.png)
 ![Thêm cầu thủ mới](screenshots/them-cau-thu.png)
 ![Danh sách cầu thủ](screenshots/danh-sach.png)
+![Tìm kiếm cầu thủ](screenshots/tim-kiem.png)
+![Cập nhật cầu thủ](screenshots/cap-nhat.png)
+![Lọc cầu thủ](screenshots/loc.png)
+![Sắp xếp cầu thủ](screenshots/sap-xep.png)
 ![Thống kê](screenshots/thong-ke.png)
 
 ## Tiến độ thực hiện
