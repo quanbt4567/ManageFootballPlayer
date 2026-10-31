@@ -5,7 +5,6 @@
 #define MAX_CAU_THU 100
 #define LUONG_TUAN_TOI_DA 1000
 
-/* ===== STRUCT: giu nguyen 7 truong da thong nhat ===== */
 typedef struct
 {
     char maCT[10];
@@ -249,7 +248,6 @@ int laBlank(char chuoi[])
     return 1;
 }
 
-/* Ten chi gom chu cai (ctype: isalpha), khoang trang, -, ' hoac . */
 int tenHopLe(char ten[])
 {
     int i;
@@ -275,20 +273,23 @@ int tenHopLe(char ten[])
     return coChu;
 }
 
-/* Ma chi gom 2-9 ky tu chu cai hoac chu so (ctype: isalnum) */
 int maHopLe(char ma[])
 {
     int i;
-    int doDai = (int)strlen(ma);
 
-    if (doDai < 2 || doDai > 9)
+    if (strlen(ma) != 8)
     {
         return 0;
     }
 
-    for (i = 0; ma[i] != '\0'; i++)
+    if (ma[0] != 'C' || ma[1] != 'T')
     {
-        if (!isalnum((unsigned char)ma[i]))
+        return 0;
+    }
+
+    for (i = 2; i < 8; i++)
+    {
+        if (!isdigit((unsigned char)ma[i]))
         {
             return 0;
         }
@@ -296,7 +297,6 @@ int maHopLe(char ma[])
     return 1;
 }
 
-/* Vi tri chi duoc 1 trong 4 gia tri chuan */
 int viTriHopLe(char viTri[])
 {
     return strcmp(viTri, "Tien dao") == 0 ||
@@ -335,8 +335,6 @@ int kiemTraMaTrung(char maCanKiem[])
     return 0;
 }
 
-/* boQua = vi tri cua cau thu dang cap nhat (khong tinh chinh minh);
-   truyen -1 khi them moi */
 int kiemTraSoAoTrung(int soAoCanKiem, int boQua)
 {
     int i;
@@ -350,7 +348,6 @@ int kiemTraSoAoTrung(int soAoCanKiem, int boQua)
     return 0;
 }
 
-/* Tra 1: nhap duoc ma hop le; 0: huy (nhap 0 hoac Ctrl+Z) */
 int nhapMa(const char thongBao[], char ma[])
 {
     char dong[100];
@@ -375,7 +372,7 @@ int nhapMa(const char thongBao[], char ma[])
 
         if (!maHopLe(dong))
         {
-            printf("Ma chi gom 2-9 ky tu chu cai va chu so, khong co khoang trang hay ky tu dac biet.\n");
+            printf("Ma phai co dang CTxxxxxx (CT + 6 chu so), vi du CT000001.\n");
             continue;
         }
 
@@ -384,7 +381,6 @@ int nhapMa(const char thongBao[], char ma[])
     }
 }
 
-/* Tra 1: nhap duoc ten hop le; 0: huy (nhap 0 hoac Ctrl+Z) */
 int nhapTen(const char thongBao[], char ten[], int kichThuoc)
 {
     int ketQua;
@@ -424,8 +420,6 @@ int nhapTen(const char thongBao[], char ten[], int kichThuoc)
     }
 }
 
-/* Chon vi tri bang menu 1-4. Tra 1: chon duoc vi tri moi;
-   0: chon 0 (giu nguyen); -1: huy (Ctrl+Z) */
 int nhapViTri(char viTri[])
 {
     int chon;
@@ -529,9 +523,6 @@ int nhapSoKhongAm(const char thongBao[], int *so)
     }
 }
 
-/* Luong tuan gioi han 0-1000 trieu dong.
-   NaN bi loai vi moi phep so sanh voi NaN deu sai (giaTri >= 0 sai);
-   +inf bi loai vi vuot qua muc tran 1000. */
 int nhapLuong(const char thongBao[], float *luong)
 {
     char dong[100];
@@ -579,9 +570,6 @@ int nhapLuong(const char thongBao[], float *luong)
         return 1;
     }
 }
-
-/* ===== CAC HAM PHUC VU CAP NHAT: Enter = giu nguyen =====
-   Tra 1: co gia tri moi hop le; 0: Enter giu nguyen; -1: huy (Ctrl+Z) */
 
 int nhapTenGiuNguyen(const char thongBao[], char tenMoi[], int kichThuoc)
 {
@@ -708,7 +696,6 @@ int nhapLuongGiuNguyen(const char thongBao[], float *luong)
     }
 }
 
-/* ===== CAC HAM DUNG CHUNG CHO CAP NHAT / XOA ===== */
 int timViTriMa(char ma[])
 {
     int i;
@@ -722,7 +709,6 @@ int timViTriMa(char ma[])
     return -1;
 }
 
-/* Mot dinh dang bang duy nhat cho moi cho hien thi */
 void inTieuDeBang(void)
 {
     printf("%-8s %-20s %-18s %-8s %-6s %-12s %-12s\n",
@@ -750,7 +736,7 @@ void themCauThu(void)
 
     while (1)
     {
-        if (!nhapMa("Nhap ma cau thu (VD: CT001, 0 de huy): ", moi.maCT))
+        if (!nhapMa("Nhap ma cau thu (VD: CT000001, 0 de huy): ", moi.maCT))
         {
             printf("Da huy them cau thu.\n");
             return;
@@ -874,7 +860,6 @@ void timKiemCauThu(void)
             break;
         }
 
-        /* Ha chu thuong tu khoa 1 lan truoc khi so sanh */
         for (j = 0; key[j] != '\0'; j++)
         {
             key[j] = (char)tolower((unsigned char)key[j]);
@@ -922,7 +907,6 @@ void timKiemCauThu(void)
     }
 }
 
-/* ===== CAP NHAT CAU THU: Enter = giu nguyen tung truong ===== */
 void capNhatCauThu(void)
 {
     int vt;
@@ -966,8 +950,6 @@ void capNhatCauThu(void)
         strcpy(doiBong[vt].hoTen, tamTen);
     }
 
-    /* Vi tri: chon 0 = giu nguyen, chon 1-4 = doi sang vi tri moi,
-       Ctrl+Z = huy cap nhat */
     ketQua = nhapViTri(doiBong[vt].viTri);
     if (ketQua == -1)
     {
@@ -1033,7 +1015,6 @@ void capNhatCauThu(void)
     printf("Cap nhat cau thu thanh cong!\n");
 }
 
-/* ===== XOA CAU THU: co xac nhan y/n ===== */
 void xoaCauThu(void)
 {
     char ma[10];
@@ -1179,7 +1160,6 @@ void sapXep(void)
         return;
     }
 
-    /* Giam dan theo so ban thang; bang nhau thi theo ma tang dan */
     for (i = 0; i < soLuong - 1; i++)
     {
         for (j = i + 1; j < soLuong; j++)
@@ -1204,7 +1184,6 @@ void sapXep(void)
         }
     }
 
-    /* Luu thu tu moi xuong file de lan mo sau khop voi man hinh */
     luuDuLieu();
     printf("Da sap xep theo so ban thang giam dan (bang nhau thi theo ma).\n");
     hienThiDanhSach();
