@@ -49,6 +49,7 @@ int nhapLuongGiuNguyen(const char thongBao[], float *luong);
 int timViTriMa(char ma[]);
 void inTieuDeBang(void);
 void inHangCauThu(CauThu ct);
+void inBangDanhSach(CauThu danhSach[], int n);
 void themCauThu(void);
 void timKiemCauThu(void);
 void capNhatCauThu(void);
@@ -340,6 +341,8 @@ int kiemTraMaTrung(char maCanKiem[])
     return 0;
 }
 
+/* boQua = vi tri cua cau thu dang cap nhat (khong tinh chinh minh);
+   truyen -1 khi them moi */
 int kiemTraSoAoTrung(int soAoCanKiem, int boQua)
 {
     int i;
@@ -528,6 +531,9 @@ int nhapSoKhongAm(const char thongBao[], int *so)
     }
 }
 
+/* Luong tuan gioi han 0-1000 trieu dong.
+   NaN bi loai vi moi phep so sanh voi NaN deu sai (giaTri >= 0 sai);
+   +inf bi loai vi vuot qua muc tran 1000. */
 int nhapLuong(const char thongBao[], float *luong)
 {
     char dong[100];
@@ -730,6 +736,17 @@ void inHangCauThu(CauThu ct)
     printf("%-8s %-20s %-18s %-8d %-6d %-12d %-12.1f\n",
            ct.maCT, ct.hoTen, ct.viTri,
            ct.soAo, ct.tuoi, ct.soBanThang, ct.luongTuan);
+}
+
+/* In bang tu mot mang cho truoc, khong doi thu tu cua mang do */
+void inBangDanhSach(CauThu danhSach[], int n)
+{
+    int i;
+    inTieuDeBang();
+    for (i = 0; i < n; i++)
+    {
+        inHangCauThu(danhSach[i]);
+    }
 }
 
 /* ===== QUAN: THEM CAU THU ===== */
@@ -1026,6 +1043,7 @@ void capNhatCauThu(void)
     printf("Cap nhat cau thu thanh cong!\n");
 }
 
+/* ===== XOA CAU THU: co xac nhan y/n ===== */
 void xoaCauThu(void)
 {
     char ma[10];
@@ -1097,7 +1115,8 @@ void xoaCauThu(void)
 /* ===== MINH: HIEN THI DANH SACH ===== */
 void hienThiDanhSach(void)
 {
-    int i;
+    CauThu tam[MAX_CAU_THU];
+    int i, j;
 
     if (soLuong == 0)
     {
@@ -1105,11 +1124,27 @@ void hienThiDanhSach(void)
         return;
     }
 
-    inTieuDeBang();
     for (i = 0; i < soLuong; i++)
     {
-        inHangCauThu(doiBong[i]);
+        tam[i] = doiBong[i];
     }
+
+    /* Sap xep BAN SAO theo ma tang dan. Ma co dinh dang CT + 6 so nen so ca ma
+       cung la so 6 so cuoi. Sap ban sao de thu tu goc trong mang chinh khong doi. */
+    for (i = 0; i < soLuong - 1; i++)
+    {
+        for (j = i + 1; j < soLuong; j++)
+        {
+            if (strcmp(tam[j].maCT, tam[i].maCT) < 0)
+            {
+                CauThu doi = tam[i];
+                tam[i] = tam[j];
+                tam[j] = doi;
+            }
+        }
+    }
+
+    inBangDanhSach(tam, soLuong);
 }
 
 /* ===== MINH: THONG KE ===== */
@@ -1198,7 +1233,7 @@ void sapXep(void)
     /* Luu thu tu moi xuong file de lan mo sau khop voi man hinh */
     luuDuLieu();
     printf("Da sap xep theo so ban thang giam dan (bang nhau thi theo ma).\n");
-    hienThiDanhSach();
+    inBangDanhSach(doiBong, soLuong);
 }
 
 /* ===== MINH: LOC CAU THU ===== */
